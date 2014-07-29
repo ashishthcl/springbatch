@@ -1,0 +1,42 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+<bean id="reader" class="org.springframework.batch.item.support.ListItemReader">
+	<constructor-arg>
+		<list value-type="String"/>
+		
+	</constructor-arg>
+</bean>
+
+<bean id="writer" class="com.jroller.spring.batch.LogWriter" >
+		<description>This is a Custom Writer Bean from XML Configuration</description>
+</bean>
+
+<bean id="helloStep" class="org.springframework.batch.core.step.item.SimpleStepFactoryBean">
+	<property name="transactionManager" ref="tm" />
+	<property name="jobRepository" ref="jobRepository" />
+	<property name="itemReader" ref="reader" />
+	<property name="itemWriter" ref="writer" />
+</bean>	
+
+<bean id="helloJob" class="org.springframework.batch.core.job.SimpleJob">
+	<property name="jobRepository" ref="jobRepository" />
+	<property name="steps">
+		<list>
+			<ref bean="helloStep"/>
+		</list>
+	</property>
+</bean>	
+
+
+<bean id="tm" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+<bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+	<property name="transactionManager" ref="tm" />
+</bean>
+
+<bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+	<property name="jobRepository" ref="jobRepository" />
+</bean>
+
+</beans>
